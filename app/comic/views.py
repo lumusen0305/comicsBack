@@ -9,14 +9,19 @@ from flask import Response
 import json
 headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36'}
 
-@comic.route('/getComic' , methods=['GET'])
+@comic.route('/getComic' , methods=['POST'])
 def getComic():
+    params=request.json
+    page=int(params["page"])
     rep = {
     "data": [],
     "code": 200,
     "msg": "null"
      }
-    link = 'https://www.manhuagui.com/list/view.html'
+    if page==1:
+        link = 'https://www.manhuagui.com/list/view.html'
+    else:
+        link = 'https://www.manhuagui.com/list/view_p'+str(page)+'.html'
     r = requests.get(link, headers = headers)
     soup = BeautifulSoup(r.text, 'lxml')
     comics = soup.find_all('ul',id="contList")
@@ -30,7 +35,7 @@ def getComic():
         else:
             src = image[0].get('src')
         star=item.find('em')
+        star=int(float(star.text)/2)
         update_time=item.find_all('span')
-        rep["data"].append({'name':name,'url':url,'image':src,'star':star.text,'update_time':update_time[3].text})
-    # return Response(json.dumps(rep),  mimetype='application/json')
-    return rep
+        rep["data"].append({'name':name,'url':url,'image':src,'star':star,'update_time':update_time[3].text[:14]})
+    return Response(json.dumps(rep),  mimetype='application/json')

@@ -11,6 +11,7 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,create_refresh_token,
     get_jwt_identity
 )
+from flask_cors import CORS
 
 # class Config(object):
 #     JOBS=[
@@ -31,6 +32,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 def create_app():
     app = Flask(__name__)
+    CORS(app, supports_credentials=True)
     # app.config.from_object(Config())
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://mstdcfjsudxodu:f143612b550b7065999bd06f4f09ef2156f8edb6d980da4e1e7dc01a2551bf77@ec2-52-71-55-81.compute-1.amazonaws.com:5432/d2ofkbduq9pta0'
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///example.sqlite"

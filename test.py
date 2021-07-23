@@ -24,6 +24,6 @@ for item in comics_list:
         src = image[0].get('data-src')
     else:
         src = image[0].get('src')
-    star=item.find('em')
+    star=float(item.find('em').text)
     update_time=item.find_all('span')
-    print(update_time[3])
+    print(update_time[3].text[:14])
