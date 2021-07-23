@@ -1,0 +1,10 @@
+Flask-SQLAlchemy
+Flask-Migrate
+itsdangerous
+MarkupSafe
+Werkzeug
+psycopg2
+Flask-Script
+click
+Flask-APScheduler
+gunicorn== 19.9.0
