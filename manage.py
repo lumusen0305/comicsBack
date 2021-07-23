@@ -5,22 +5,23 @@ from flask_apscheduler import APScheduler
 from flask_jwt_extended import JWTManager
 from extensions import jwt, db,migrate,mail,manager,scheduler,flask_uuid
 import datetime
+# import flask_jwt_extended 
 
 from flask_jwt_extended import (
-    jwt_refresh_token_required, get_jwt_identity, create_access_token,
-    create_refresh_token, jwt_required
+    JWTManager, jwt_required, create_access_token,create_refresh_token,
+    get_jwt_identity
 )
 
-class Config(object):
-    JOBS=[
-        {
-            'id':'morning',
-            'func':'__main__:send_read_email',
-            'trigger':'cron',
-            'hour':8,
-            'minute':0
-        }
-    ]
+# class Config(object):
+#     JOBS=[
+#         {
+#             'id':'morning',
+#             'func':'__main__:send_read_email',
+#             'trigger':'cron',
+#             'hour':8,
+#             'minute':0
+#         }
+#     ]
 # def job_1():   # 一個函式，用來做定時任務的任務。
 #     print("HI")
 
@@ -30,7 +31,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config())
+    # app.config.from_object(Config())
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://mstdcfjsudxodu:f143612b550b7065999bd06f4f09ef2156f8edb6d980da4e1e7dc01a2551bf77@ec2-52-71-55-81.compute-1.amazonaws.com:5432/d2ofkbduq9pta0'
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///example.sqlite"
     app.secret_key = '2006D625EB0B32A0FAE127417E88FAEF'

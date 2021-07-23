@@ -10,10 +10,9 @@ from flask import request, jsonify
 #     jwt_refresh_token_required, create_refresh_token,
 #     get_jwt_identity
 # )
-from manage import flask_uuid,JWTManager, jwt_required, create_access_token,jwt_refresh_token_required, create_refresh_token,get_jwt_identity
-@account.route('/' , methods=['GET'])
-def test():
-    return 123
+from manage import flask_uuid,JWTManager, jwt_required, create_access_token, create_refresh_token,get_jwt_identity
+# from manage import flask_jwt_extended
+
 #register
 @account.route('/register' , methods=['POST'])
 def register():
@@ -71,7 +70,7 @@ def login():
     return jsonify(ret), 200
 
 @account.route('/refresh', methods=['POST'])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     current_user = get_jwt_identity()
     ret = {
@@ -80,7 +79,7 @@ def refresh():
     return jsonify(ret), 200
 
 @account.route('/protected', methods=['GET'])
-@jwt_required
+@ jwt_required()
 def protected():
     username = get_jwt_identity()
     return jsonify(logged_in_as=username), 200

@@ -1,16 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
 import urllib
-
+import json
 import time
-count = 0
+
+from sqlalchemy.sql.expression import null
 headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36'}
+rep = {
+"data": [],
+"code": 200,
+"msg": "null"
+ }
 link = 'https://www.manhuagui.com/list/view.html'
 r = requests.get(link, headers = headers)
 soup = BeautifulSoup(r.text, 'lxml')
 comics = soup.find_all('ul',id="contList")
 comics_list= comics[0].find_all('li')
-# print(comics_list)
 for item in comics_list:
     url = "https://www.manhuagui.com"+item.find('a')['href']
     name=item.find('a')['title']
@@ -20,3 +25,5 @@ for item in comics_list:
     else:
         src = image[0].get('src')
     star=item.find('em')
+    update_time=item.find_all('span')
+    print(update_time[3])
