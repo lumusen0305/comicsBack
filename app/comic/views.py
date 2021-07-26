@@ -7,6 +7,9 @@ from . import comic
 from flask import request, jsonify
 from flask import Response
 import json
+import re
+from urllib.parse import urlparse
+
 headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36'}
 
 @comic.route('/getComic' , methods=['POST'])
@@ -18,26 +21,14 @@ def getComic():
     "code": 200,
     "msg": "null"
      }
-    if page==1:
-        link = 'https://www.manhuagui.com/list/view.html'
-    else:
-        link = 'https://www.manhuagui.com/list/view_p'+str(page)+'.html'
+    link = 'https://www.baozimh.com/classify?page='+str(page)
     r = requests.get(link, headers = headers)
     soup = BeautifulSoup(r.text, 'lxml')
-    comics = soup.find_all('ul',id="contList")
-    comics_list= comics[0].find_all('li')
-    for item in comics_list:
-        url = "https://www.manhuagui.com"+item.find('a')['href']
-        name=item.find('a')['title']
-        image=item.find_all('img')
-        if image[0].get('data-src')!=None:
-            src = image[0].get('data-src')
-        else:
-            src = image[0].get('src')
-        star=item.find('em')
-        star=int(float(star.text)/2)
-        update_time=item.find_all('span')
-        rep["data"].append({'name':name,'url':url,'image':src,'star':star,'update_time':update_time[3].text[:14]})
+    comic_table = soup.find_all('div',class_='comics-card pure-u-1-3 pure-u-md-1-4 pure-u-lg-1-6')
+    for comic in comic_table:
+        comic_img=comic.find_all('amp-img')
+        comic_title=comic.find_all('a',class_='comics-card__info')
+        rep["data"].append({'name':comic_img[0].get('alt'),'url':'https://www.baozimh.com'+comic_title[0].get('href'),'image':comic_img[0].get('src'),'author':comic_title[0].find_all('small')[0].text.replace('\n', '').replace(' ', '')})
     return Response(json.dumps(rep),  mimetype='application/json')
 
 @comic.route('/getComicList' , methods=['POST'])
@@ -51,10 +42,20 @@ def getComicList():
      }
     r = requests.get(comic_url, headers = headers)
     soup = BeautifulSoup(r.text, 'lxml')
-    comic_table = soup.find_all('div',id='chapter-list-1')
-    chapter_list=comic_table[0].find_all('ul')
-    for chapter in chapter_list:
-        chapter_detail=chapter.find_all('a',class_='status0')
-        for item in reversed(chapter_detail):
-            rep["data"].append({'chapter':item.get('title'),'url':'https://www.manhuagui.com'+item['href']})
+    chapter = soup.find('div',id='chapter-items')
+    chapterlist=chapter.find_all('a',class_='comics-chapters__item')
+    for comic in chapterlist:
+        parsed_result=urlparse(comic.get('href'))
+        res=re.split('&|=',parsed_result.query)
+        url='https://www.webmota.com/comic/chapter/'+res[1]+'/'+res[3]+'_'+res[5]+'.html'
+        chapter_image = requests.get(url, headers = headers)
+        chapter_image_soup = BeautifulSoup(chapter_image.text, 'lxml')
+        rep["data"].append({'chapter':comic.find('span').text,'url':url})
+    chapter = soup.find('div',id='chapters_other_list')
+    chapterlist=chapter.find_all('a',class_='comics-chapters__item')
+    for comic in chapterlist:
+        parsed_result=urlparse(comic.get('href'))
+        res=re.split('&|=',parsed_result.query)
+        url='https://www.webmota.com/comic/chapter/'+res[1]+'/'+res[3]+'_'+res[5]+'.html'
+        rep["data"].append({'chapter':comic.find('span').text,'url':url})
     return Response(json.dumps(rep),  mimetype='application/json')
