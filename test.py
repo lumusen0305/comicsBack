@@ -18,5 +18,3 @@ r = requests.get(link, headers = headers)
 soup = BeautifulSoup(r.text, 'lxml')
 chapter = soup.find('img',class_='comic-contain__item')
 print(chapter.get('data-src'))
-# for item in chapter:
-#     print(item.get('data-src'))

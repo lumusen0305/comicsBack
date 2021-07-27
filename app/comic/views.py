@@ -50,12 +50,41 @@ def getComicList():
         url='https://www.webmota.com/comic/chapter/'+res[1]+'/'+res[3]+'_'+res[5]+'.html'
         chapter_image = requests.get(url, headers = headers)
         chapter_image_soup = BeautifulSoup(chapter_image.text, 'lxml')
-        rep["data"].append({'chapter':comic.find('span').text,'url':url})
+        chapter_image_img = chapter_image_soup.find('img',class_='comic-contain__item')
+        rep["data"].append({'chapter':comic.find('span').text,'url':url,'image':chapter_image_img.get('data-src')})
+    # chapter = soup.find('div',id='chapters_other_list')
+    # chapterlist=chapter.find_all('a',class_='comics-chapters__item')
+    # for comic in chapterlist:
+    #     parsed_result=urlparse(comic.get('href'))
+    #     res=re.split('&|=',parsed_result.query)
+    #     url='https://www.webmota.com/comic/chapter/'+res[1]+'/'+res[3]+'_'+res[5]+'.html'
+    #     chapter_image = requests.get(url, headers = headers)
+    #     chapter_image_soup = BeautifulSoup(chapter_image.text, 'lxml')
+    #     chapter_image_img = chapter_image_soup.find('img',class_='comic-contain__item')
+    #     rep["data"].append({'chapter':comic.find('span').text,'url':url,'image':chapter_image_img.get('data-src')})
+    return Response(json.dumps(rep),  mimetype='application/json')
+
+
+@comic.route('/getComicMoreList' , methods=['POST'])
+def getComicMoreList():
+    params=request.json
+    comic_url=params["comic_url"]
+    rep = {
+    "data": [],
+    "code": 200,
+    "msg": "null"
+     }
+    r = requests.get(comic_url, headers = headers)
+    soup = BeautifulSoup(r.text, 'lxml')
     chapter = soup.find('div',id='chapters_other_list')
     chapterlist=chapter.find_all('a',class_='comics-chapters__item')
     for comic in chapterlist:
         parsed_result=urlparse(comic.get('href'))
         res=re.split('&|=',parsed_result.query)
         url='https://www.webmota.com/comic/chapter/'+res[1]+'/'+res[3]+'_'+res[5]+'.html'
-        rep["data"].append({'chapter':comic.find('span').text,'url':url})
+        chapter_image = requests.get(url, headers = headers)
+        chapter_image_soup = BeautifulSoup(chapter_image.text, 'lxml')
+        chapter_image_img = chapter_image_soup.find('img',class_='comic-contain__item')
+        rep["data"].append({'chapter':comic.find('span').text,'url':url,'image':chapter_image_img.get('data-src')})
     return Response(json.dumps(rep),  mimetype='application/json')
+
