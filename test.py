@@ -13,8 +13,9 @@ rep = {
 "code": 200,
 "msg": "null"
  }
-link = 'https://www.webmota.com/comic/chapter/wuni-iciyuandongman/0_159.html'
+link = 'https://www.webmota.com/comic/chapter/jueshizhanhun-chuanqimanye/0_320.html'
 r = requests.get(link, headers = headers)
 soup = BeautifulSoup(r.text, 'lxml')
-chapter = soup.find('img',class_='comic-contain__item')
-print(chapter.get('data-src'))
+chapter_image_img = soup.find_all('img',class_='comic-contain__item')
+for item in chapter_image_img:
+    print(item.get('data-src'))
